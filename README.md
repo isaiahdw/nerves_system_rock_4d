@@ -1,10 +1,12 @@
 # Nerves System for the Radxa ROCK 4D (Rockchip RK3576)
 
 This is the experimental `mainline` branch: it builds a mainline LTS
-kernel (6.18.y) instead of the Rockchip vendor kernel. Some hardware
-doesn't work here — there is no NPU driver, no GPU userspace, and no
-analog audio (see the table below). For production use the `main`
-branch, which uses the Rockchip kernel and has full hardware support.
+kernel (6.18.y) instead of the Rockchip vendor kernel. Verified on
+hardware: boot, ethernet, WiFi/BT, HDMI console, watchdog, RTC, A/B
+updates with connectivity-based validation. Some hardware doesn't work
+here — there is no NPU driver, no GPU userspace, and no analog audio
+(see the table below). For production use the `main` branch, which uses
+the Rockchip kernel and has full hardware support.
 
 A [Nerves](https://nerves-project.org) system for the
 [Radxa ROCK 4D](https://docs.radxa.com/en/rock4/rock4d) single-board
