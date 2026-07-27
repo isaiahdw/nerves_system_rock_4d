@@ -22,10 +22,12 @@ that holds the Nerves firmware; 1 is the USB-C port, which is power only.
 
 ## Boot architecture
 
-The ROCK 4D boot ROM loads code from SPI NOR, then UFS, then USB. It
-never boots from the SD card. All standard boards ship with a 16 MB SPI
-NOR containing U-Boot, and the SD card holds only the Nerves environment,
-kernels, and root filesystems.
+The board runs Nerves from the SD card, but the bootloader can't live
+there: the RK3576 boot ROM only loads its first-stage code from SPI NOR,
+UFS, or USB — not from SD. All standard boards ship with U-Boot in the
+onboard 16 MB SPI NOR, and that runs first at power-on. From there on,
+everything comes off the SD card: U-Boot reads the Nerves environment,
+kernel, and root filesystems from it.
 
 A new board boots the Nerves SD as-is, because the factory bootloader
 does extlinux boot and the SD always carries a valid
