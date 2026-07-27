@@ -52,7 +52,7 @@ doesn't need to be touched again.
 | UFS modules | No | Kernel support present; boot/storage integration not done |
 | NPU (6 TOPS) | Yes | RKNPU driver (0.9.8) + librknnrt 2.3.2 runtime and headers (`package/librknnrt`); build models on the host with rknn-toolkit2 |
 | MIPI DSI / CSI | No | Connectors unused; needs panel/camera bring-up |
-| Onboard WiFi in AP mode | Untested | wpa_supplicant is built with AP support; driver capability unverified |
+| Onboard WiFi in AP mode | Yes | VintageNetWiFi `mode: :ap` |
 
 ## Building
 
