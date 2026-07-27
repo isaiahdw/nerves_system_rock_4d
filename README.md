@@ -1,5 +1,11 @@
 # Nerves System for the Radxa ROCK 4D (Rockchip RK3576)
 
+This branch (`main`) uses the Rockchip vendor kernel and is the
+recommended, fully-supported configuration. An experimental
+[`mainline`](https://github.com/isaiahdw/nerves_system_rock_4d/tree/mainline)
+branch builds a mainline LTS kernel instead; it needs no board patches
+but currently lacks the NPU, GPU userspace, and analog audio.
+
 A [Nerves](https://nerves-project.org) system for the
 [Radxa ROCK 4D](https://docs.radxa.com/en/rock4/rock4d) single-board
 computer. Rockchip RK3576 (4x Cortex-A72 + 4x Cortex-A53, Mali-G52 MC3),
