@@ -52,7 +52,7 @@ doesn't need to be touched again.
 | USB input | Yes | eudev + libinput (keyboards/mice/touchscreens) |
 | Audio | Partial | HDMI audio only; the mainline dts has no analog codec node (headphone jack dead) |
 | Watchdog | Yes | dw-wdt armed by Erlang heart (`nerves_heart`), NOWAYOUT |
-| RTC | Yes | HYM8563; sets the clock at boot (fit a CR2032 to keep time) |
+| RTC | Yes | HYM8563; sets the clock at boot. Battery backup via the 2-pin socket on the board underside (CR2032 with a 1.25 mm-pitch plug lead, not a bare coin cell) |
 | USB hosts / gadget | Yes | 2x USB3 + 2x USB2; the OTG port does `usb0` gadget ethernet |
 | GPIO/I2C/SPI/PWM/UART/CAN header | Yes | Via [Circuits.*](https://elixir-circuits.github.io/); see the 40-pin summary below |
 | SPI NOR access | Yes | Unpartitioned mtd + `flashcp`; copy `u-boot-rockchip-spi.bin` over to reflash the bootloader from Linux (maskrom is the documented path) |
