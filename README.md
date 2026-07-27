@@ -50,7 +50,7 @@ doesn't need to be touched again.
 | SPI NOR access | Yes | `loader` mtd + `flashcp` are included; copy `u-boot-rockchip-spi.bin` over to reflash the bootloader from Linux (maskrom is the documented path) |
 | PCIe / NVMe (FPC) | Untested | Enabled in the device tree; needs the M.2 HAT to verify |
 | UFS modules | No | Kernel support present; boot/storage integration not done |
-| NPU (6 TOPS) | No | Kernel driver loads; the librknnrt userspace is not included |
+| NPU (6 TOPS) | Yes | RKNPU driver (0.9.8) + librknnrt 2.3.2 runtime and headers (`package/librknnrt`); build models on the host with rknn-toolkit2 |
 | MIPI DSI / CSI | No | Connectors unused; needs panel/camera bring-up |
 | Onboard WiFi in AP mode | Untested | wpa_supplicant is built with AP support; driver capability unverified |
 
@@ -179,7 +179,7 @@ the vendor code this system carries.
 | Display | HDMI 2.1 up to 4K@120 (VOP + Samsung HDPTX PHY) | fbcon on by default; app takes over DRM |
 | MIPI | DSI 4-lane (up to 2K); CSI 1× 4-lane (or 2× 2-lane) + 1× 2-lane | Not brought up |
 | GPU | Mali G52 MC3 | Vendor kmod (`/dev/mali0`) + libmali GBM blob |
-| NPU | 6 TOPS INT8 RKNPU | Kernel driver present; librknnrt not shipped |
+| NPU | 6 TOPS INT8 RKNPU | Kernel driver 0.9.8 + librknnrt 2.3.2 |
 | Audio | ES8388 codec (3.5 mm 4-pole headphone + mic, drives 32 Ω) + HDMI audio | ALSA; es8323 driver via fallback compatible |
 | USB | 1× USB3 OTG/host (upper; maskrom port), 1× USB3 host, 2× USB2 hosts | OTG port doubles as gadget/`usb0` |
 | PCIe | Gen2 x1 over 16-pin FPC (RPi 5-style) | M.2 NVMe via Radxa HAT; dts-enabled, untested |

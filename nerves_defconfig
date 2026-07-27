@@ -82,6 +82,10 @@ BR2_PACKAGE_NERVES_CONFIG_ACCEPT_RNG_NOTICE=y
 # test
 BR2_PACKAGE_LIBMALI=y
 BR2_PACKAGE_KMSCUBE=y
+# NPU: RKNN runtime for the in-kernel RKNPU driver. Applications link
+# against rknn_api.h/rknn_matmul_api.h (staging) and load models built
+# with rknn-toolkit2 on the host.
+BR2_PACKAGE_LIBRKNNRT=y
 # Input: eudev (dynamic /dev) and libinput, the input layer DRM/KMS UI
 # stacks read USB keyboards/mice/touchscreens through. No UI toolkit ships
 # in the system — bring your own (a Flutter embedder, LVGL, Slint, Qt, ...)

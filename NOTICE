@@ -15,7 +15,9 @@ texts are in LICENSES/.
 
 Downloaded at build time (not in this repository): the ARM Mali libmali
 userspace blob (Rockchip's public libmali distribution, proprietary), the
-AIC8800 WiFi/BT firmware (via radxa-pkg/aic8800, proprietary), the Linux
-kernel (GPL-2.0-only), Buildroot packages (various). Built firmware images
+AIC8800 WiFi/BT firmware (via radxa-pkg/aic8800, proprietary), the
+Rockchip RKNN NPU runtime (librknnrt via airockchip/rknn-toolkit2,
+proprietary), the Linux kernel (GPL-2.0-only), Buildroot packages
+(various). Built firmware images
 therefore contain proprietary firmware alongside GPL components, as is
 usual for embedded Linux board support.

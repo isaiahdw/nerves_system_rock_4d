@@ -36,4 +36,7 @@ Hardware support at release:
   radxa-pkg/aic8800 driver + firmware (`package/aic8800`, Radxa's full
   patch series applied); wlan0 + BlueZ hci0, modalias-autoloaded.
 
-Not yet supported: PCIe/NVMe (untested), UFS modules, NPU, MIPI DSI/CSI.
+- NPU: librknnrt 2.3.2 runtime and C headers matching the in-kernel
+  RKNPU driver (0.9.8); models are built on the host with rknn-toolkit2.
+
+Not yet supported: PCIe/NVMe (untested), UFS modules, MIPI DSI/CSI.
