@@ -1,10 +1,16 @@
 # Nerves System for the Radxa ROCK 4D (Rockchip RK3576)
 
+This is the experimental `mainline` branch: it builds a mainline LTS
+kernel (6.18.y) instead of the Rockchip vendor kernel. Some hardware
+doesn't work here — there is no NPU driver, no GPU userspace, and no
+analog audio (see the table below). For production use the `main`
+branch, which uses the Rockchip kernel and has full hardware support.
+
 A [Nerves](https://nerves-project.org) system for the
 [Radxa ROCK 4D](https://docs.radxa.com/en/rock4/rock4d) single-board
 computer. Rockchip RK3576 (4x Cortex-A72 + 4x Cortex-A53, Mali-G52 MC3),
 LPDDR5, Gigabit Ethernet, WiFi 6/BT 5.4, HDMI 2.1, USB 3.0, and a 40-pin
-GPIO header. The IEx console is on `ttyFIQ0`, the 1.5 Mbaud debug UART on
+GPIO header. The IEx console is on `ttyS0`, the 1.5 Mbaud debug UART on
 header pins 8/10/6 (see `rootfs_overlay/etc/erlinit.config`).
 
 ![ROCK 4D interface diagram](assets/rock4d-interface.webp)
@@ -40,17 +46,17 @@ doesn't need to be touched again.
 | WiFi (onboard) | Yes | Quectel FCU760K (AIC8800D80, USB) via the out-of-tree [radxa-pkg/aic8800](https://github.com/radxa-pkg/aic8800) driver in `package/aic8800`. Enumerates as `a69c:8d80`, re-enumerates as `8d81` after firmware upload, loads via modalias. USB WiFi dongles also work |
 | Bluetooth | Partial | `hci0` registers (aic_btusb, BlueZ mode); no BT userspace is included |
 | HDMI display + console | Yes | Framebuffer console enabled by default; a KMS app takes the display over |
-| GPU (Mali G52 MC3) | Yes | Vendor kmod + libmali (EGL/GLES/GBM); `kmscube` is included as a smoke test. No UI toolkit in the system |
+| GPU (Mali G52 MC3) | Partial | Kernel panfrost driver ships (=m); no Mesa userspace yet (Buildroot's panfrost requires LLVM) |
 | USB input | Yes | eudev + libinput (keyboards/mice/touchscreens) |
-| Audio | Yes | ES8388 headphone jack + HDMI audio via ALSA (aplay/amixer included) |
+| Audio | Partial | HDMI audio only; the mainline dts has no analog codec node (headphone jack dead) |
 | Watchdog | Yes | dw-wdt armed by Erlang heart (`nerves_heart`), NOWAYOUT |
 | RTC | Yes | HYM8563; sets the clock at boot (fit a CR2032 to keep time) |
 | USB hosts / gadget | Yes | 2x USB3 + 2x USB2; the OTG port does `usb0` gadget ethernet |
 | GPIO/I2C/SPI/PWM/UART/CAN header | Yes | Via [Circuits.*](https://elixir-circuits.github.io/); see the 40-pin summary below |
-| SPI NOR access | Yes | `loader` mtd + `flashcp` are included; copy `u-boot-rockchip-spi.bin` over to reflash the bootloader from Linux (maskrom is the documented path) |
+| SPI NOR access | Yes | Unpartitioned mtd + `flashcp`; copy `u-boot-rockchip-spi.bin` over to reflash the bootloader from Linux (maskrom is the documented path) |
 | PCIe / NVMe (FPC) | Untested | Enabled in the device tree; needs the M.2 HAT to verify |
 | UFS modules | No | Kernel support present; boot/storage integration not done |
-| NPU (6 TOPS) | Yes | RKNPU driver (0.9.8) + librknnrt 2.3.2 runtime and headers (`package/librknnrt`); build models on the host with rknn-toolkit2 |
+| NPU (6 TOPS) | No | No mainline RK3576 NPU driver (the upstream rocket driver is RK3588-only); use the `main` branch for NPU work |
 | MIPI DSI / CSI | No | Connectors unused; needs panel/camera bring-up |
 | Onboard WiFi in AP mode | Yes | VintageNetWiFi `mode: :ap` |
 
@@ -142,28 +148,18 @@ the FAT partition instead. U-Boot build details and provenance:
 
 ## Kernel
 
-The kernel source is [armbian/linux-rockchip](https://github.com/armbian/linux-rockchip)
-branch `rk-6.1-rkr5.1` (Rockchip BSP 6.1 + upstream-stable merges + Armbian
-fixes), pinned by commit SHA in `nerves_defconfig` and fetched by Buildroot
-as a GitHub archive. Radxa's ROCK 4D device tree (`rk3576-rock-4d-spi`)
-is already in this tree. The only board patch is `linux/0001`, which
-fixes two things: it enables the watchdog node (shipped disabled;
-`nerves_heart` requires `/dev/watchdog0`) and re-points the `mmc0` alias
-at the SD card. The vendor dtsi aliases mmc0 to the disabled eMMC and
-the kernel numbers `mmcblk` devices by alias, so without the patch the
-SD card is `/dev/mmcblk1` and the env, boot, and app-data mounts fail.
+Mainline LTS from kernel.org, currently 6.18.40, using the upstream
+`rk3576-rock-4d` device tree (in mainline since 6.15; ethernet, PCIe,
+USB3 and HDMI audio completed around 6.17). No board patches are needed:
+mainline already aliases `mmc0` to the SD card and enables the watchdog.
 
-The configuration is the in-tree `rockchip_linux_defconfig` plus two
-fragments: `linux/rk3576.config` (Mali Bifrost) and `linux/nerves.config`
-(Nerves requirements and board deltas, documented inline). One board
-delta worth knowing about: `CONFIG_REALTEK_PHY` for the RTL8211F, which
-the vendor defconfig lacks.
+The configuration is the arm64 `defconfig` plus `linux/nerves.config`
+(built-in storage/network/display drivers and the Nerves requirements,
+documented inline).
 
-Mainline support for the ROCK 4D is improving: the dts landed in 6.15,
-ethernet/PCIe/USB/HDMI-audio/UFS were complete around 6.17, and mainline
-U-Boot supports the board since v2026.01 (which this system uses). A
-future migration to a mainline kernel plus Panfrost would drop most of
-the vendor code this system carries.
+Known gaps versus the vendor kernel on the `main` branch: no NPU driver,
+no analog audio, HDMI CEC and 10-bit output land in 6.19+, and hardware
+video decode (rkvdec) lands in 7.0.
 
 ## Hardware reference
 

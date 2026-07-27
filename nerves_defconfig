@@ -26,24 +26,19 @@ BR2_ROOTFS_OVERLAY="${BR2_EXTERNAL_NERVES_PATH}/board/nerves-common/rootfs_overl
 BR2_ROOTFS_POST_BUILD_SCRIPT="${NERVES_DEFCONFIG_DIR}/post-build.sh ${BR2_EXTERNAL_NERVES_PATH}/board/nerves-common/post-build.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="${NERVES_DEFCONFIG_DIR}/post-createfs.sh"
 BR2_LINUX_KERNEL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-# armbian/linux-rockchip branch rk-6.1-rkr5.1 (Rockchip BSP 6.1 + stable
-# merges + Armbian fixes; kernel 6.1.115), pinned to the 2026-07-15 tip.
-# The ROCK 4D's device tree (rk3576-rock-4d-spi) is already in this tree;
-# the only board patch is linux/0001 (watchdog enable + mmc0 alias).
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/armbian/linux-rockchip/archive/5280f9b4336199c4025c8eed894d2b4e2268dcc6.tar.gz"
+# Mainline LTS. The ROCK 4D device tree is upstream since 6.15 and needs
+# no board patches on 6.18: the watchdog is enabled by default and mmc0
+# is already aliased to the SD card.
+BR2_LINUX_KERNEL_CUSTOM_VERSION=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.40"
 BR2_LINUX_KERNEL_PATCH="${NERVES_DEFCONFIG_DIR}/linux"
-# Same config Radxa's vendor build uses (rockchip_linux_defconfig + rk3576
-# Mali fragment) plus Nerves requirements.
-BR2_LINUX_KERNEL_USE_DEFCONFIG=y
-BR2_LINUX_KERNEL_DEFCONFIG="rockchip_linux"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="${NERVES_DEFCONFIG_DIR}/linux/rk3576.config ${NERVES_DEFCONFIG_DIR}/linux/nerves.config"
+# arm64 defconfig plus the Nerves fragment (built-in storage/net/display
+# and Nerves requirements, documented inline).
+BR2_LINUX_KERNEL_USE_ARCH_DEFAULT_CONFIG=y
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="${NERVES_DEFCONFIG_DIR}/linux/nerves.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-# The -spi variant of the ROCK 4D dts matches boards as sold (all standard
-# SKUs have the boot SPI NOR): it exposes the NOR as the "loader" mtd for
-# bootloader updates and disables the unusable eMMC. The .dtb basename must
-# match the devicetree.dtb resource in fwup.conf.
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3576-rock-4d-spi"
+# The .dtb basename must match the devicetree.dtb resource in fwup.conf.
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3576-rock-4d"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_PACKAGE_BUSYBOX_CONFIG="${BR2_EXTERNAL_NERVES_PATH}/board/nerves-common/busybox.config"
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="${NERVES_DEFCONFIG_DIR}/busybox.fragment"
@@ -78,22 +73,19 @@ BR2_PACKAGE_NBTTY=y
 BR2_PACKAGE_AIC8800=y
 BR2_PACKAGE_NERVES_CONFIG=y
 BR2_PACKAGE_NERVES_CONFIG_ACCEPT_RNG_NOTICE=y
-# GPU: proprietary Mali userspace (RK3576 = Mali G52 MC3) + a KMS GL smoke
-# test
-BR2_PACKAGE_LIBMALI=y
-BR2_PACKAGE_KMSCUBE=y
-# NPU: RKNN runtime for the in-kernel RKNPU driver. Applications link
-# against rknn_api.h/rknn_matmul_api.h (staging) and load models built
-# with rknn-toolkit2 on the host.
-BR2_PACKAGE_LIBRKNNRT=y
+# GPU userspace (Mesa panfrost) is not in the image yet: Buildroot
+# 2026.05 makes the panfrost driver depend on LLVM. The kernel ships
+# CONFIG_DRM_PANFROST ready for it; fbcon covers the console meanwhile.
+# The vendor NPU runtime (librknnrt) has no mainline driver to talk to,
+# so it stays off on this branch.
 # Input: eudev (dynamic /dev) and libinput, the input layer DRM/KMS UI
 # stacks read USB keyboards/mice/touchscreens through. No UI toolkit ships
 # in the system — bring your own (a Flutter embedder, LVGL, Slint, Qt, ...)
-# from the application side; kmscube verifies the DRM/KMS + GPU path.
+# from the application side.
 BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
 BR2_PACKAGE_LIBINPUT=y
-# Audio: ES8388 codec (headphone jack) + HDMI audio. ALSA userspace:
-# aplay/arecord/amixer/alsactl + speaker-test.
+# Audio: HDMI only in the mainline dts (no analog codec node yet). ALSA
+# userspace: aplay/amixer/alsactl + speaker-test.
 BR2_PACKAGE_ALSA_LIB=y
 BR2_PACKAGE_ALSA_UTILS=y
 BR2_PACKAGE_ALSA_UTILS_APLAY=y
