@@ -83,7 +83,7 @@ is not on Hex; depend on this repository):
 
 # in deps():
 {:nerves_system_rock_4d,
- github: "isaiahdw/nerves_system_rock_4d", tag: "v0.1.0",
+ github: "isaiahdw/nerves_system_rock_4d", tag: "v0.1.1",
  runtime: false, targets: :rock_4d}
 ```
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.1
+
+Firmware validation fixes found during hardware testing:
+
+- The ops.fw `validate` task no longer writes `upgrade_available`/
+  `bootcount` (U-Boot bootcount-feature variables this system doesn't
+  use). nerves_runtime's `firmware_validation_status/0` consults
+  `upgrade_available` before `nerves_fw_validated`, so a stale value
+  made unvalidated firmware self-report as validated while U-Boot's
+  revert logic (which reads `nerves_fw_validated`) would still revert
+  it.
+- Upgrade and validate tasks now unset those variables, so boards that
+  ran the v0.1.0 ops.fw self-heal on their next upgrade.
+- Docs: clarified SD-vs-SPI boot roles, the RTC battery connector, and
+  added a pointer to the experimental mainline-kernel branch.
+
 ## v0.1.0
 
 Initial release. Verified on hardware 2026-07-26: full boot on the factory
